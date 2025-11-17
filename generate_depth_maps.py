@@ -6,8 +6,8 @@ from tqdm import tqdm
 import numpy as np
 import torch
 
-from depth_pro import create_model_and_transforms
-from utils import load_rgb
+from depth_pro.depth_pro import create_model_and_transforms
+from depth_pro.utils import load_rgb
 
 
 
@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="build cam traj")
     parser.add_argument("--working_dir", type=str, default="../data/pointcloud/")
     parser.add_argument("--input_path", type=str, default="../data/pointcloud/transforms.json")
+    parser.add_argument("--only_ref", action='store_true')
     args = parser.parse_args()
     
     device = "cuda"
@@ -30,6 +31,8 @@ if __name__ == '__main__':
     depth_pro_model, transform = create_model_and_transforms(device=torch.device("cuda"))
     depth_pro_model.eval()
     for frame in tqdm(metadata["frames"]): 
+        if args.only_ref and frame != metadata["frames"][metadata["ref"]]: 
+            continue
         K = np.array([[frame["fl_x"], 0, frame["cx"]], 
                       [0, frame["fl_y"], frame["cy"]], 
                       [0, 0, 1]])

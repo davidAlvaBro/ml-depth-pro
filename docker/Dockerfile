@@ -4,11 +4,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libheif-dev \
  && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
+
+COPY . /app
+
 RUN python -m pip install --upgrade pip && \
     python -m pip install \
         "numpy<2" \
         timm \
         pillow-heif \
-        matplotlib
-
-CMD ["base"]
+        matplotlib && \
+    python -m pip install -e .
