@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
         depth_file_name = Path("depths") / (Path(image_name).stem + (".npy"))
         frame["depth_path"] = str(depth_file_name)
-        np.save(working_dir / depth_file_name, depth.cpu().numpy())
+        np.save(working_dir / depth_file_name, depth)
 
     with open(args.input_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, ensure_ascii=False, indent=2)
