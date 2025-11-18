@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="build cam traj")
     parser.add_argument("--working_dir", type=str, default="../data/pointcloud/")
     parser.add_argument("--input_path", type=str, default="../data/pointcloud/transforms.json")
+    parser.add_argument("--max_depth", type=float, default=-1, help="Some generated images can be really far away, which messes up everything")
     parser.add_argument("--only_ref", action='store_true')
     args = parser.parse_args()
     
@@ -42,7 +43,9 @@ if __name__ == '__main__':
         image = transform(image)
 
         prediction = depth_pro_model.infer(image, f_px=K[0,0])
-        depth = prediction["depth"]
+        depth = prediction["depth"].cpu().numpy()
+        if args.max_depth > 0: 
+            depth[depth > args.max_depth] = args.max_depth
 
         depth_file_name = Path("depths") / (Path(image_name).stem + (".npy"))
         frame["depth_path"] = str(depth_file_name)
